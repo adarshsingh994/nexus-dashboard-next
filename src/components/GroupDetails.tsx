@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Bulb {
   ip: string;
@@ -29,7 +30,7 @@ interface Group {
 
 interface GroupDetailsProps {
   groupId: string;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 const baseUrl = 'http://192.168.18.4:3000/api';
@@ -39,6 +40,7 @@ export default function GroupDetails({ groupId, onBack }: GroupDetailsProps) {
   const [bulbs, setBulbs] = useState<Bulb[]>([]);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     fetchGroupDetails();
@@ -60,6 +62,14 @@ export default function GroupDetails({ groupId, onBack }: GroupDetailsProps) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      router.push('/');
     }
   };
 
@@ -96,7 +106,7 @@ export default function GroupDetails({ groupId, onBack }: GroupDetailsProps) {
     <div className="max-w-6xl mx-auto p-4 sm:p-6 md:p-8">
       <div className="mb-6">
         <button
-          onClick={onBack}
+          onClick={handleBack}
           className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

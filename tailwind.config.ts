@@ -12,6 +12,15 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      keyframes: {
+        loading: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' }
+        }
+      },
+      animation: {
+        'loading': 'loading 1s ease-in-out infinite'
+      }
     },
   },
   plugins: [],
