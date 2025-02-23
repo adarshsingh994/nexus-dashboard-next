@@ -85,6 +85,18 @@ const DeviceManager = forwardRef<DeviceManagerHandle, DeviceManagerProps>(
 
     useEffect(() => {
       fetchDevices();
+      
+      // Listen for device added to group event
+      const handleDeviceAddedToGroup = () => {
+        fetchDevices();
+      };
+      
+      window.addEventListener('deviceAddedToGroup', handleDeviceAddedToGroup);
+      
+      // Cleanup listener on unmount
+      return () => {
+        window.removeEventListener('deviceAddedToGroup', handleDeviceAddedToGroup);
+      };
     }, []);
 
     if (loading) {
