@@ -17,9 +17,6 @@ export default function Home() {
         onCreateGroup={() => setIsCreateGroupOpen(true)}
       />
       <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-        <h1 className="md-headline-large text-gray-900 dark:text-white">
-          {deviceCount} {deviceCount === 1 ? 'device' : 'devices'} available
-        </h1>
         <DeviceManager
           ref={deviceManagerRef}
           onDeviceCountChange={setDeviceCount}

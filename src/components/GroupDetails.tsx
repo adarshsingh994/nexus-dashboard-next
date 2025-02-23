@@ -40,6 +40,8 @@ export default function GroupDetails({ groupId, onBack }: GroupDetailsProps) {
   const [bulbs, setBulbs] = useState<Bulb[]>([]);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState<{ name: string; description: string }>({ name: '', description: '' });
   const router = useRouter();
 
   useEffect(() => {
@@ -54,6 +56,7 @@ export default function GroupDetails({ groupId, onBack }: GroupDetailsProps) {
       if (data.success) {
         setGroup(data.data.group);
         setBulbs(data.data.bulbs);
+        setEditForm({ name: data.data.group.name, description: data.data.group.description });
       } else {
         setError(data.message);
       }
@@ -62,6 +65,57 @@ export default function GroupDetails({ groupId, onBack }: GroupDetailsProps) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const response = await fetch(`${baseUrl}/groups/${groupId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editForm),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setGroup(data.data);
+        setIsEditing(false);
+        setError('');
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      setError('Failed to update group');
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this group? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${baseUrl}/groups/${groupId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        router.push('/');
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      setError('Failed to delete group');
+      console.error(err);
     }
   };
 
@@ -120,9 +174,81 @@ export default function GroupDetails({ groupId, onBack }: GroupDetailsProps) {
       </button>
 
       <div className="md-card p-8 space-y-8">
-        <div className="space-y-2">
-          <h1 className="md-headline-large text-gray-900 dark:text-white">{group.name}</h1>
-          <p className="md-body-large text-gray-600 dark:text-gray-300">{group.description}</p>
+        <div className="flex justify-between items-start">
+          {isEditing ? (
+            <div className="space-y-4 w-full">
+              <div>
+                <label htmlFor="name" className="block md-body-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full md-input"
+                />
+              </div>
+              <div>
+                <label htmlFor="description" className="block md-body-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  value={editForm.description}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                  className="w-full md-input min-h-[100px]"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={handleUpdate}
+                  className="inline-flex items-center px-3 py-1.5 text-sm rounded border border-primary bg-primary text-white hover:bg-primary-dark dark:bg-primary dark:border-primary-light dark:hover:bg-primary-dark transition-colors duration-200 font-medium"
+                >
+                  <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Save Changes</span>
+                </button>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="inline-flex items-center px-3 py-1.5 text-sm rounded border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 font-medium"
+                >
+                  <svg className="w-4 h-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span>Cancel</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <h1 className="md-headline-large text-gray-900 dark:text-white">{group.name}</h1>
+                <p className="md-body-large text-gray-600 dark:text-gray-300">{group.description}</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="inline-flex items-center px-3 py-1.5 text-sm rounded border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 font-medium"
+                >
+                  <svg className="w-4 h-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  <span>Edit</span>
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="inline-flex items-center px-3 py-1.5 text-sm rounded border border-red-200 bg-white text-red-600 hover:bg-red-50 dark:bg-gray-800 dark:border-red-800/30 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors duration-200 font-medium"
+                >
+                  <svg className="w-4 h-4 mr-1.5 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  <span>Delete</span>
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="space-y-6">

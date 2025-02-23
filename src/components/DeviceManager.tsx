@@ -107,6 +107,10 @@ const DeviceManager = forwardRef<DeviceManagerHandle, DeviceManagerProps>(
       );
     }
 
+    if (devices.length === 0) {
+      return null;
+    }
+
     return (
       <div className="md-card bg-surface dark:bg-gray-800/50 overflow-hidden">
         {error && (
@@ -205,22 +209,6 @@ const DeviceManager = forwardRef<DeviceManagerHandle, DeviceManagerProps>(
                 </div>
               </div>
             ))}
-
-            {devices.length === 0 && (
-              <div className="col-span-full">
-                <div className="md-card p-12 flex flex-col items-center text-center">
-                  <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-6">
-                    <svg className="w-10 h-10 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
-                    </svg>
-                  </div>
-                  <h3 className="md-headline-small text-gray-900 dark:text-white mb-2">No devices found</h3>
-                  <p className="md-body-large text-gray-500 dark:text-gray-400">
-                    Click refresh to scan for devices
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
