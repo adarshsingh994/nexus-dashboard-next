@@ -14,6 +14,7 @@ export interface Group {
   parentGroups: string[];
   childGroups: string[];
   bulbs: string[];
+  isOn: boolean;
 }
 
 interface GroupLightState {
@@ -174,6 +175,16 @@ export default function GroupManager({ isCreateOpen = false, onCreateClose = () 
       const data = await response.json();
       if (data.success) {
         setGroups(data.data.groups);
+        
+        // Initialize lightStates with isOn values from API response
+        const initialLightStates: GroupLightState = {};
+        data.data.groups.forEach((group: Group) => {
+          initialLightStates[group.id] = {
+            isOn: group.isOn ?? false, // Use nullish coalescing for backward compatibility
+            isLoading: false
+          };
+        });
+        setLightStates(initialLightStates);
       } else {
         setError(data.message);
       }
