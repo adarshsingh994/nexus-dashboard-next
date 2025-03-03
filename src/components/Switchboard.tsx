@@ -235,8 +235,8 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
           </div>
         </div>
         
-        {/* Compact grid layout with smaller gaps */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+        {/* Professional grid layout */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
           {groups.map((group) => {
             const isOn = lightStates[group.id]?.isOn || false;
             const isLoading = lightStates[group.id]?.isLoading || false;
@@ -245,137 +245,154 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
             return (
               <div
                 key={group.id}
-                className="md-card overflow-hidden transition-all duration-300 hover:shadow-elevation-3"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden"
                 data-group-id={group.id}
               >
-                {/* Compact Power Toggle Button - Focus on power functionality */}
-                <div className="flex flex-col h-full">
-                  {/* Header with room name */}
-                  <div className="px-2 pt-2 pb-1 text-center">
-                    <h3 className="text-base font-medium text-gray-900 dark:text-white truncate max-w-full">{group.name}</h3>
-                  </div>
-                  
-                  {/* Compact Power Button */}
-                  <button
-                    onClick={() => toggleLights(group.id, !isOn)}
-                    disabled={isLoading}
-                    className={`
-                      flex-1 flex flex-col items-center justify-center py-2 px-1
-                      ${isLoading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}
-                      ${isOn ? 'bg-primary/10 dark:bg-primary/20' : 'bg-gray-50 dark:bg-gray-800'}
-                      transition-colors duration-300
-                    `}
-                    aria-pressed={isOn}
-                    aria-label={`Toggle ${group.name} lights`}
-                  >
+                {/* Room name header */}
+                <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700">
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">{group.name}</h3>
+                </div>
+                
+                {/* Main power button - focal point of the card */}
+                <button
+                  onClick={() => toggleLights(group.id, !isOn)}
+                  disabled={isLoading}
+                  className={`
+                    w-full px-4 py-6 flex items-center justify-center relative
+                    ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'}
+                    transition-colors duration-300
+                    ${isOn ? 'bg-primary/10 dark:bg-primary/20' : 'bg-gray-50 dark:bg-gray-800'}
+                  `}
+                  aria-pressed={isOn}
+                  aria-label={`Toggle ${group.name} lights`}
+                >
+                  <div className="flex flex-col items-center">
+                    {/* Power icon */}
                     <div className={`
-                      w-14 h-14 rounded-full flex items-center justify-center mb-1
-                      ${isOn ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}
-                      transition-colors duration-300 shadow
+                      w-14 h-14 rounded-full flex items-center justify-center mb-2
+                      ${isOn ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'}
+                      transition-colors duration-300 shadow-sm
                     `}>
                       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 10V3L4 14h7v7l9-11h-7z"
-                        />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                     </div>
                     
-                    <span className={`text-sm font-medium ${isOn ? 'text-primary' : 'text-gray-500 dark:text-gray-400'}`}>
-                      {isOn ? 'ON' : 'OFF'}
-                    </span>
+                    {/* Power status text */}
+                    <div className="text-sm font-medium">
+                      <span className={`${isOn ? 'text-primary' : 'text-gray-500 dark:text-gray-400'}`}>
+                        {isOn ? 'ON' : 'OFF'}
+                      </span>
+                    </div>
                     
-                    {isLoading && (
-                      <div className="absolute inset-0 bg-black/5 dark:bg-black/20 flex items-center justify-center">
-                        <svg className="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                      </div>
-                    )}
-                  </button>
-                  
-                  {/* Footer with minimal controls */}
-                  <div className="px-1 py-1 flex items-center justify-between border-t border-gray-100 dark:border-gray-700">
-                    <button
-                      onClick={() => toggleColorPicker(group.id)}
-                      className="p-1 text-gray-500 hover:text-primary transition-colors"
-                      aria-label="Color controls"
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                      </svg>
-                    </button>
-                    
-                    <button
-                      onClick={() => router.push(`/group/${group.id}`)}
-                      className="p-1 text-gray-500 hover:text-primary transition-colors"
-                      aria-label="View details"
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </button>
+                    {/* Light count */}
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {group.bulbs.length} {group.bulbs.length === 1 ? 'light' : 'lights'}
+                    </div>
                   </div>
                   
-                  {/* Horizontally Scrollable Color Picker */}
-                  {isColorPickerExpanded && (
-                    <div className="color-picker-scrollable p-2 border-t border-gray-100 dark:border-gray-700 animate-in slide-in-from-top duration-200">
-                      <style jsx>{`
-                        /* Make the color picker horizontally scrollable */
-                        .color-picker-scrollable :global(.grid-cols-3) {
-                          display: flex !important;
-                          flex-wrap: nowrap !important;
-                          overflow-x: auto !important;
-                          scrollbar-width: none !important; /* Firefox */
-                          -ms-overflow-style: none !important; /* IE and Edge */
-                          padding-bottom: 4px !important;
-                        }
-                        
-                        /* Hide scrollbar for Chrome, Safari and Opera */
-                        .color-picker-scrollable :global(.grid-cols-3)::-webkit-scrollbar {
-                          display: none !important;
-                        }
-                        
-                        /* Make the color boxes fixed width */
-                        .color-picker-scrollable :global(.aspect-square) {
-                          width: 2rem !important;
-                          height: 2rem !important;
-                          min-height: 2rem !important;
-                          flex: 0 0 auto !important;
-                          margin-right: 0.5rem !important;
-                        }
-                        
-                        /* Make the warm/cold buttons smaller and fixed width */
-                        .color-picker-scrollable :global(.grid-cols-2) {
-                          display: flex !important;
-                          gap: 0.5rem !important;
-                          margin-bottom: 0.5rem !important;
-                        }
-                        
-                        .color-picker-scrollable :global(.h-8) {
-                          height: 1.75rem !important;
-                          flex: 1 !important;
-                          display: flex !important;
-                          justify-content: center !important;
-                          align-items: center !important;
-                        }
-                        
-                        /* Make the text smaller */
-                        .color-picker-scrollable :global(.md-body-medium) {
-                          font-size: 0.75rem !important;
-                        }
-                      `}</style>
-                      <ColorPicker
-                        onColorSelect={(color) => setColor(group.id, color)}
-                        onWhiteSelect={(type) => setWhiteTemperature(group.id, type)}
-                        isLoading={lightStates[group.id]?.colorLoading}
-                      />
+                  {/* Loading overlay */}
+                  {isLoading && (
+                    <div className="absolute inset-0 bg-black/5 dark:bg-black/20 flex items-center justify-center">
+                      <svg className="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
                     </div>
                   )}
+                </button>
+                
+                {/* Footer controls - improved alignment */}
+                <div className="border-t border-gray-100 dark:border-gray-700 grid grid-cols-2 divide-x divide-gray-100 dark:divide-gray-700">
+                  <button
+                    onClick={() => toggleColorPicker(group.id)}
+                    className="py-2.5 flex items-center justify-center gap-1.5 text-gray-500 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                    aria-label="Color controls"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                    </svg>
+                    <span className="text-xs font-medium">Colors</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => router.push(`/group/${group.id}`)}
+                    className="py-2.5 flex items-center justify-center gap-1.5 text-gray-500 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                    aria-label="View details"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-xs font-medium">Details</span>
+                  </button>
                 </div>
+                
+                {/* Modern Horizontally Scrollable Color Picker */}
+                {isColorPickerExpanded && (
+                  <div className="color-picker-modern px-3 py-2 border-t border-gray-100 dark:border-gray-700 animate-in slide-in-from-top duration-200">
+                    <style jsx>{`
+                      /* Style the white temperature section */
+                      .color-picker-modern :global(.grid-cols-2) {
+                        display: flex !important;
+                        gap: 0.5rem !important;
+                        margin-bottom: 0.75rem !important;
+                      }
+                      
+                      .color-picker-modern :global(.h-8) {
+                        height: 2rem !important;
+                        flex: 1 !important;
+                        display: flex !important;
+                        justify-content: center !important;
+                        align-items: center !important;
+                        border-radius: 0.375rem !important;
+                        font-size: 0.75rem !important;
+                        font-weight: 500 !important;
+                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+                      }
+                      
+                      /* Make the color picker horizontally scrollable */
+                      .color-picker-modern :global(.grid-cols-3) {
+                        display: flex !important;
+                        flex-wrap: nowrap !important;
+                        overflow-x: auto !important;
+                        scrollbar-width: none !important; /* Firefox */
+                        -ms-overflow-style: none !important; /* IE and Edge */
+                        padding: 0.25rem 0 !important;
+                        margin: 0 -0.25rem !important; /* Compensate for the color box margin */
+                      }
+                      
+                      /* Hide scrollbar for Chrome, Safari and Opera */
+                      .color-picker-modern :global(.grid-cols-3)::-webkit-scrollbar {
+                        display: none !important;
+                      }
+                      
+                      /* Style the color boxes */
+                      .color-picker-modern :global(.aspect-square) {
+                        width: 1.75rem !important;
+                        height: 1.75rem !important;
+                        min-height: 1.75rem !important;
+                        flex: 0 0 auto !important;
+                        margin: 0 0.25rem !important;
+                        border-radius: 0.375rem !important;
+                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+                        transition: transform 0.15s ease-in-out !important;
+                      }
+                      
+                      .color-picker-modern :global(.aspect-square):hover {
+                        transform: translateY(-1px) !important;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+                      }
+                    `}</style>
+                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                      Color Controls
+                    </div>
+                    <ColorPicker
+                      onColorSelect={(color) => setColor(group.id, color)}
+                      onWhiteSelect={(type) => setWhiteTemperature(group.id, type)}
+                      isLoading={lightStates[group.id]?.colorLoading}
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
