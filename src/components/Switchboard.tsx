@@ -188,6 +188,8 @@ export interface Light {
 
 export default function Switchboard({ isCreateOpen = false, onCreateClose = () => {} }: SwitchboardProps) {
   const [groups, setGroups] = useState<Group[]>([]); // Initialize with empty array
+  // We still fetch lights data for potential future use, even though we don't display the count
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [lights, setLights] = useState<Light[]>([]); // Initialize with empty array
   const [error, setError] = useState<string>('');
   const [lightStates, setLightStates] = useState<GroupLightState>({});
@@ -465,7 +467,7 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Switchboard</h1>
             <p className="text-sm text-gray-500 mt-1">
-              {groups?.length || 0} {(groups?.length || 0) === 1 ? 'group' : 'groups'} and {lights?.length || 0} {(lights?.length || 0) === 1 ? 'light' : 'lights'} available
+              {groups?.length || 0} {(groups?.length || 0) === 1 ? 'group' : 'groups'} available
             </p>
             {isClient && (
               <p className="text-xs text-gray-400 mt-1">
