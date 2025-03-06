@@ -95,9 +95,9 @@ function LongPressPopup({
 
   const popup = (
     <>
-      {/* Dimmed background overlay */}
+      {/* Dimmed background overlay - updated to match neumorphic design */}
       <div
-        className="fixed inset-0 bg-black/50 dark:bg-black/70 animate-in fade-in duration-200 z-40"
+        className="fixed inset-0 bg-blue-900/10 backdrop-blur-sm animate-in fade-in duration-200 z-40"
         onClick={onClose}
       />
       
@@ -114,13 +114,20 @@ function LongPressPopup({
           width: 'calc(100vw - 48px)'
         }}
       >
-        <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
-          <div className="p-4">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-medium text-gray-900 dark:text-white">Controls</h3>
+        <div className="rounded-3xl overflow-hidden" style={{
+          background: '#EEF4FF',
+          boxShadow: '8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff'
+        }}>
+          <div className="p-5">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-900">Controls</h3>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
+                className="text-gray-400 hover:text-gray-500 w-8 h-8 flex items-center justify-center rounded-full"
+                style={{
+                  background: '#EEF4FF',
+                  boxShadow: '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff'
+                }}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -128,9 +135,9 @@ function LongPressPopup({
               </button>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+                <div className="text-sm font-medium text-gray-600 mb-3">
                   Color Controls
                 </div>
                 <ColorPicker
@@ -144,16 +151,20 @@ function LongPressPopup({
                 />
               </div>
               
-              <div className="h-px bg-gray-200 dark:bg-gray-700"></div>
+              <div className="h-px bg-gray-200"></div>
               
               <button
                 onClick={onViewDetails}
-                className="w-full py-2 px-3 flex items-center justify-center gap-2 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="w-full py-3 px-4 flex items-center justify-center gap-2 text-blue-500 rounded-xl transition-colors"
+                style={{
+                  background: '#EEF4FF',
+                  boxShadow: '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff'
+                }}
               >
-                <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">View Details</span>
+                <span className="text-sm font-medium">View Details</span>
               </button>
             </div>
           </div>
@@ -369,7 +380,7 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
   };
 
   return (
-    <div className="w-full min-h-screen p-2 sm:p-3 md:p-4 lg:p-6">
+    <div className="w-full min-h-screen p-2 sm:p-3 md:p-4 lg:p-6 bg-blue-50">
       {error && (
         <div className="md-card bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6 max-w-6xl mx-auto">
           <div className="flex items-center">
@@ -394,15 +405,15 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
       <div className="space-y-4 sm:space-y-6 max-w-6xl mx-auto">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="md-headline-medium text-gray-900 dark:text-white">Switchboard</h1>
-            <p className="md-body-small text-gray-500 dark:text-gray-400 mt-1">
+            <h1 className="text-3xl font-bold text-gray-900">Switchboard</h1>
+            <p className="text-sm text-gray-500 mt-1">
               {groups.length} {groups.length === 1 ? 'group' : 'groups'} available
             </p>
           </div>
         </div>
         
-        {/* Material Design grid layout */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+        {/* Neumorphic grid layout */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
           {groups.map((group) => {
             const isOn = lightStates[group.id]?.isOn || false;
             const isLoading = lightStates[group.id]?.isLoading || false;
@@ -410,18 +421,22 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
             return (
               <div
                 key={group.id}
-                className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-sm dark:shadow-gray-900/30 hover:shadow-md dark:hover:shadow-gray-900/40 transition-all duration-300"
+                className="overflow-hidden rounded-3xl"
                 onTouchStart={(e) => handleTouchStart(e, group.id)}
                 onTouchEnd={handleTouchEnd}
                 onTouchMove={handleTouchMove}
                 data-group-id={group.id}
+                style={{
+                  background: '#EEF4FF',
+                  boxShadow: '8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff'
+                }}
               >
-                {/* Card header - simplified */}
-                <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700/50">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{group.name}</h3>
+                {/* Card header */}
+                <div className="px-3 py-2">
+                  <h3 className="text-sm font-medium text-gray-900 truncate">{group.name}</h3>
                 </div>
                 
-                {/* Power button - more minimal */}
+                {/* Power button */}
                 <button
                   onClick={() => toggleLights(group.id, !isOn)}
                   disabled={isLoading}
@@ -429,32 +444,27 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
                     w-full px-3 py-4 flex items-center justify-center relative overflow-hidden
                     ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'}
                     transition-all duration-300
-                    ${isOn
-                      ? 'bg-primary/5 dark:bg-primary/10'
-                      : 'bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50'
-                    }
                   `}
                   style={{
-                    WebkitTapHighlightColor: 'transparent'
+                    WebkitTapHighlightColor: 'transparent',
+                    background: '#EEF4FF'
                   }}
                   aria-pressed={isOn}
                   aria-label={`Toggle ${group.name} lights`}
                 >
                   <div className="flex flex-col items-center relative z-10">
-                    {/* Power icon - simplified */}
+                    {/* Power icon - neumorphic style */}
                     <div
                       className={`
                         w-12 h-12 rounded-full flex items-center justify-center mb-2
-                        ${isOn
-                          ? 'bg-primary text-white dark:text-gray-100'
-                          : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
-                        }
+                        ${isOn ? 'text-blue-500' : 'text-gray-500'}
                         transition-all duration-300
                       `}
                       style={{
+                        background: '#EEF4FF',
                         boxShadow: isOn
-                          ? '0 2px 8px rgba(var(--primary-rgb), 0.3)'
-                          : '0 1px 3px rgba(0, 0, 0, 0.1)'
+                          ? 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff, 0 0 0 6px rgba(59, 130, 246, 0.1)'
+                          : '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff'
                       }}
                     >
                       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -462,25 +472,25 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
                       </svg>
                     </div>
                     
-                    {/* Status text - simplified */}
+                    {/* Status text */}
                     <div className="text-xs font-medium">
-                      <span className={`${isOn ? 'text-primary' : 'text-gray-600 dark:text-gray-300'}`}>
+                      <span className={`${isOn ? 'text-blue-500' : 'text-gray-600'}`}>
                         {isOn ? 'ON' : 'OFF'}
                       </span>
-                      <span className="text-gray-400 dark:text-gray-500 ml-1">
+                      <span className="text-gray-400 ml-1">
                         ({group.bulbs.length})
                       </span>
                     </div>
                   </div>
                   
-                  {/* Loading overlay - simplified */}
+                  {/* Loading overlay */}
                   {isLoading && (
                     <div
-                      className="absolute inset-0 flex items-center justify-center z-20 bg-white/70 dark:bg-gray-900/70"
+                      className="absolute inset-0 flex items-center justify-center z-20 bg-white/70"
                       style={{ backdropFilter: 'blur(2px)' }}
                     >
                       <svg
-                        className="animate-spin h-8 w-8 text-primary dark:text-primary-light"
+                        className="animate-spin h-8 w-8 text-blue-500"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -503,8 +513,8 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
                   )}
                 </button>
                 
-                {/* Long press hint - subtle indicator */}
-                <div className="text-center py-1 text-[10px] text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700">
+                {/* Long press hint */}
+                <div className="text-center py-1 text-[10px] text-gray-400 border-t border-gray-100">
                   Long press for options
                 </div>
               </div>
@@ -513,21 +523,35 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
           
           {groups.length === 0 && (
            <div className="col-span-full">
-             <div className="p-6 flex flex-col items-center text-center bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900/30">
-               <div className="w-16 h-16 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center mb-4">
-                 <svg className="w-8 h-8 text-primary dark:text-primary-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+             <div className="p-6 flex flex-col items-center text-center rounded-3xl"
+               style={{
+                 background: '#EEF4FF',
+                 boxShadow: '8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff'
+               }}
+             >
+               <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                 style={{
+                   background: '#EEF4FF',
+                   boxShadow: '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff'
+                 }}
+               >
+                 <svg className="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                  </svg>
                </div>
-               <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+               <h3 className="text-lg font-medium text-gray-900 mb-2">
                  No groups yet
                </h3>
-               <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+               <p className="text-sm text-gray-600 mb-4">
                  Create your first group to start controlling your lights
                </p>
                <button
                  onClick={onCreateClose}
-                 className="flex items-center justify-center gap-2 py-2 px-4 text-sm font-medium text-white dark:text-gray-100 bg-primary dark:bg-primary-dark hover:bg-primary-dark dark:hover:bg-primary-darker rounded-full"
+                 className="flex items-center justify-center gap-2 py-2 px-4 text-sm font-medium text-blue-500 rounded-full"
+                 style={{
+                   background: '#EEF4FF',
+                   boxShadow: '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff'
+                 }}
                >
                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
