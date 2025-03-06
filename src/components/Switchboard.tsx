@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import CreateGroupPopup from './CreateGroupPopup';
@@ -178,10 +178,26 @@ function LongPressPopup({
 
 const baseUrl = 'http://192.168.18.4:3000/api';
 
+export interface Light {
+  id: string;
+  name: string;
+  type: string;
+  isOn: boolean;
+  isReachable: boolean;
+}
+
 export default function Switchboard({ isCreateOpen = false, onCreateClose = () => {} }: SwitchboardProps) {
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]); // Initialize with empty array
+  const [lights, setLights] = useState<Light[]>([]); // Initialize with empty array
   const [error, setError] = useState<string>('');
   const [lightStates, setLightStates] = useState<GroupLightState>({});
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  
+  // This effect runs only on the client after hydration is complete
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
   const [activePopup, setActivePopup] = useState<{
     groupId: string;
@@ -350,11 +366,22 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
     }
   };
 
-  useEffect(() => {
-    fetchGroups();
+  const fetchLights = useCallback(async () => {
+    try {
+      const response = await fetch(`${baseUrl}/lights`);
+      const data = await response.json();
+      if (data.success) {
+        setLights(data.data.lights);
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      setError('Failed to fetch lights');
+      console.error(err);
+    }
   }, []);
 
-  const fetchGroups = async () => {
+  const fetchGroups = useCallback(async () => {
     try {
       const response = await fetch(`${baseUrl}/groups`);
       const data = await response.json();
@@ -377,7 +404,38 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
       setError('Failed to fetch groups');
       console.error(err);
     }
-  };
+  }, []);
+
+  // Function to refresh both lights and groups data
+  const refreshData = useCallback(async () => {
+    try {
+      await Promise.all([fetchLights(), fetchGroups()]);
+      setLastRefresh(new Date());
+    } catch (err) {
+      console.error('Error refreshing data:', err);
+      // Still update the refresh time even if there was an error
+      setLastRefresh(new Date());
+    }
+  }, [fetchLights, fetchGroups]);
+
+  // Initial data load - only on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      refreshData();
+    }
+  }, [refreshData]);
+
+  // Set up interval for refreshing data every minute - only on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const intervalId = setInterval(() => {
+        refreshData();
+      }, 60000); // 60000 ms = 1 minute
+
+      // Clean up interval on component unmount
+      return () => clearInterval(intervalId);
+    }
+  }, [refreshData]);
 
   return (
     <div className="w-full min-h-screen p-2 sm:p-3 md:p-4 lg:p-6 bg-blue-50">
@@ -399,7 +457,7 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
       <CreateGroupPopup
         isOpen={isCreateOpen}
         onClose={onCreateClose}
-        onGroupCreated={fetchGroups}
+        onGroupCreated={refreshData}
       />
 
       <div className="space-y-4 sm:space-y-6 max-w-6xl mx-auto">
@@ -407,8 +465,13 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Switchboard</h1>
             <p className="text-sm text-gray-500 mt-1">
-              {groups.length} {groups.length === 1 ? 'group' : 'groups'} available
+              {groups?.length || 0} {(groups?.length || 0) === 1 ? 'group' : 'groups'} and {lights?.length || 0} {(lights?.length || 0) === 1 ? 'light' : 'lights'} available
             </p>
+            {isClient && (
+              <p className="text-xs text-gray-400 mt-1">
+                Last refreshed: {lastRefresh?.toLocaleTimeString() || 'Never'}
+              </p>
+            )}
           </div>
         </div>
         
