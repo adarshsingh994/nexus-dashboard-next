@@ -486,14 +486,15 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
             return (
               <div
                 key={group.id}
-                className="overflow-hidden rounded-3xl"
+                className="overflow-hidden rounded-3xl transition-all duration-300 hover:translate-y-[-2px]"
                 onTouchStart={(e) => handleTouchStart(e, group.id)}
                 onTouchEnd={handleTouchEnd}
                 onTouchMove={handleTouchMove}
                 data-group-id={group.id}
                 style={{
                   background: '#EEF4FF',
-                  boxShadow: '8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff'
+                  boxShadow: '8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease'
                 }}
               >
                 {/* Card header */}
@@ -506,9 +507,11 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
                   onClick={() => toggleLights(group.id, !isOn)}
                   disabled={isLoading}
                   className={`
+                    group
                     w-full px-3 py-4 flex items-center justify-center relative overflow-hidden
                     ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'}
                     transition-all duration-300
+                    active:scale-[0.98]
                   `}
                   style={{
                     WebkitTapHighlightColor: 'transparent',
@@ -518,64 +521,118 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
                   aria-label={`Toggle ${group.name} lights`}
                 >
                   <div className="flex flex-col items-center relative z-10">
-                    {/* Power icon - neumorphic style */}
-                    <div
-                      className={`
-                        w-12 h-12 rounded-full flex items-center justify-center mb-2
-                        ${isOn ? 'text-blue-500' : 'text-gray-500'}
-                        transition-all duration-300
-                      `}
-                      style={{
-                        background: '#EEF4FF',
-                        boxShadow: isOn
-                          ? 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff, 0 0 0 6px rgba(59, 130, 246, 0.1)'
-                          : '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff'
-                      }}
-                    >
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
+                    {/* Power icon with circular progress - neumorphic style */}
+                    <div className="relative">
+                      {/* Circular progress indicator - perfectly aligned with button circumference */}
+                      {isLoading && (
+                        <svg
+                          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12"
+                          viewBox="0 0 100 100"
+                          style={{ position: 'absolute', zIndex: 5 }}
+                        >
+                          <circle
+                            className="text-gray-200"
+                            cx="50"
+                            cy="50"
+                            r="48"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                            strokeDasharray="302"
+                            strokeDashoffset="0"
+                          />
+                          <circle
+                            className="text-blue-500 transition-all duration-300"
+                            cx="50"
+                            cy="50"
+                            r="48"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                            strokeDasharray="302"
+                            strokeDashoffset="302"
+                            strokeLinecap="round"
+                            style={{
+                              animation: 'circleProgress 1.5s ease-in-out infinite',
+                              transformOrigin: 'center',
+                              transform: 'rotate(-90deg)'
+                            }}
+                          />
+                        </svg>
+                      )}
+                      
+                      {/* Power button */}
+                      <div
+                        className={`
+                          w-12 h-12 rounded-full flex items-center justify-center mb-2
+                          ${isOn ? 'text-blue-500' : 'text-gray-500'}
+                          transition-all duration-300 transform relative z-10
+                          ${isLoading ? 'scale-95' : 'scale-100'}
+                          group-active:scale-95
+                        `}
+                        style={{
+                          background: '#EEF4FF',
+                          boxShadow: isOn
+                            ? 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff, 0 0 0 6px rgba(59, 130, 246, 0.1)'
+                            : '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff',
+                          transition: 'box-shadow 0.3s ease, transform 0.2s ease'
+                        }}
+                        onMouseDown={(e) => {
+                          e.currentTarget.style.boxShadow = 'inset 6px 6px 12px #d1d9e6, inset -6px -6px 12px #ffffff';
+                        }}
+                        onMouseUp={(e) => {
+                          e.currentTarget.style.boxShadow = isOn
+                            ? 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff, 0 0 0 6px rgba(59, 130, 246, 0.1)'
+                            : '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.boxShadow = isOn
+                            ? 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff, 0 0 0 6px rgba(59, 130, 246, 0.1)'
+                            : '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff';
+                        }}
+                        onTouchStart={(e) => {
+                          e.currentTarget.style.boxShadow = 'inset 6px 6px 12px #d1d9e6, inset -6px -6px 12px #ffffff';
+                        }}
+                        onTouchEnd={(e) => {
+                          e.currentTarget.style.boxShadow = isOn
+                            ? 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff, 0 0 0 6px rgba(59, 130, 246, 0.1)'
+                            : '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff';
+                        }}
+                      >
+                        <svg
+                          className={`w-6 h-6 transition-transform duration-300 ${isOn ? 'scale-110' : 'scale-100'}`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          style={{
+                            filter: isOn ? 'drop-shadow(0 0 2px rgba(59, 130, 246, 0.5))' : 'none',
+                            transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+                          }}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      </div>
                     </div>
                     
                     {/* Status text */}
-                    <div className="text-xs font-medium">
-                      <span className={`${isOn ? 'text-blue-500' : 'text-gray-600'}`}>
-                        {isOn ? 'ON' : 'OFF'}
-                      </span>
-                      <span className="text-gray-400 ml-1">
-                        ({group.bulbs.length})
-                      </span>
+                    <div className="text-xs font-medium relative h-4 overflow-hidden">
+                      <div className={`flex items-center transition-all duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
+                        <span
+                          className={`inline-block transition-all duration-300 ${isOn ? 'text-blue-500 transform translate-y-0' : 'text-gray-600 transform translate-y-0'}`}
+                          style={{
+                            transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+                          }}
+                        >
+                          {isOn ? 'ON' : 'OFF'}
+                        </span>
+                        <span className="text-gray-400 ml-1">
+                          ({group.bulbs.length})
+                        </span>
+                      </div>
                     </div>
                   </div>
                   
-                  {/* Loading overlay */}
-                  {isLoading && (
-                    <div
-                      className="absolute inset-0 flex items-center justify-center z-20 bg-white/70"
-                      style={{ backdropFilter: 'blur(2px)' }}
-                    >
-                      <svg
-                        className="animate-spin h-8 w-8 text-blue-500"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="3"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                    </div>
-                  )}
+                  {/* We've replaced the loading overlay with the circular progress bar around the power button */}
                 </button>
                 
                 {/* Long press hint */}
@@ -588,19 +645,32 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
           
           {groups.length === 0 && (
            <div className="col-span-full">
-             <div className="p-6 flex flex-col items-center text-center rounded-3xl"
+             <div
+               className="p-6 flex flex-col items-center text-center rounded-3xl transition-all duration-500"
                style={{
                  background: '#EEF4FF',
-                 boxShadow: '8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff'
+                 boxShadow: '8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff',
+                 animation: 'fadeIn 0.8s ease-out'
                }}
              >
-               <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+               <div
+                 className="w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-all duration-500"
                  style={{
                    background: '#EEF4FF',
-                   boxShadow: '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff'
+                   boxShadow: '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff',
+                   animation: 'pulse 3s infinite ease-in-out'
                  }}
                >
-                 <svg className="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <svg
+                   className="w-8 h-8 text-blue-500 transition-all duration-500"
+                   fill="none"
+                   viewBox="0 0 24 24"
+                   stroke="currentColor"
+                   style={{
+                     filter: 'drop-shadow(0 0 2px rgba(59, 130, 246, 0.3))',
+                     animation: 'float 3s infinite ease-in-out'
+                   }}
+                 >
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                  </svg>
                </div>
@@ -612,10 +682,26 @@ export default function Switchboard({ isCreateOpen = false, onCreateClose = () =
                </p>
                <button
                  onClick={onCreateClose}
-                 className="flex items-center justify-center gap-2 py-2 px-4 text-sm font-medium text-blue-500 rounded-full"
+                 className="flex items-center justify-center gap-2 py-2 px-4 text-sm font-medium text-blue-500 rounded-full transition-all duration-300 hover:scale-105 active:scale-[0.98]"
                  style={{
                    background: '#EEF4FF',
-                   boxShadow: '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff'
+                   boxShadow: '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff',
+                   transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                 }}
+                 onMouseDown={(e) => {
+                   e.currentTarget.style.boxShadow = 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff';
+                 }}
+                 onMouseUp={(e) => {
+                   e.currentTarget.style.boxShadow = '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff';
+                 }}
+                 onMouseLeave={(e) => {
+                   e.currentTarget.style.boxShadow = '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff';
+                 }}
+                 onTouchStart={(e) => {
+                   e.currentTarget.style.boxShadow = 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff';
+                 }}
+                 onTouchEnd={(e) => {
+                   e.currentTarget.style.boxShadow = '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff';
                  }}
                >
                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
