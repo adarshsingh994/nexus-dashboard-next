@@ -49,5 +49,8 @@ export interface GroupCardProps {
     isLoading: boolean;
   };
   onToggleLights: (groupId: string, turnOn: boolean) => Promise<void>;
-  onLongPress: (groupId: string) => void;
+  onLongPress?: (groupId: string) => void;
+  handleTouchStart: (e: React.TouchEvent, groupId: string) => void;
+  handleTouchEnd: () => void;
+  handleTouchMove: () => void;
 }

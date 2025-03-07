@@ -2,32 +2,32 @@
 
 import { GroupCardProps } from './types';
 
-export function GroupCard({ 
-  group, 
-  lightState, 
-  onToggleLights, 
-  onLongPress 
+export function GroupCard({
+  group,
+  lightState,
+  onToggleLights,
+  handleTouchStart,
+  handleTouchEnd,
+  handleTouchMove
 }: GroupCardProps) {
   const isOn = lightState?.isOn || false;
   const isLoading = lightState?.isLoading || false;
 
   return (
     <div
-      className="overflow-hidden rounded-3xl transition-all duration-300 hover:translate-y-[-2px]"
-      onTouchStart={(e) => {
-        e.preventDefault();
-        onLongPress(group.id);
-      }}
+      className="overflow-hidden rounded-3xl transition-all duration-300 hover:translate-y-[-2px] bg-blue-50 dark:bg-gray-800"
+      onTouchStart={(e) => handleTouchStart(e, group.id)}
+      onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchMove}
       data-group-id={group.id}
       style={{
-        background: '#EEF4FF',
-        boxShadow: '8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff',
+        boxShadow: 'var(--card-shadow)',
         transition: 'transform 0.3s ease, box-shadow 0.3s ease'
       }}
     >
       {/* Card header */}
       <div className="px-3 py-2">
-        <h3 className="text-sm font-medium text-gray-900 truncate">{group.name}</h3>
+        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{group.name}</h3>
       </div>
       
       {/* Power button */}
@@ -40,10 +40,10 @@ export function GroupCard({
           ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'}
           transition-all duration-300
           active:scale-[0.98]
+          bg-blue-50 dark:bg-gray-800
         `}
         style={{
           WebkitTapHighlightColor: 'transparent',
-          background: '#EEF4FF'
         }}
         aria-pressed={isOn}
         aria-label={`Toggle ${group.name} lights`}
@@ -59,7 +59,7 @@ export function GroupCard({
                 style={{ position: 'absolute', zIndex: 5 }}
               >
                 <circle
-                  className="text-gray-200"
+                  className="text-gray-200 dark:text-gray-700"
                   cx="50"
                   cy="50"
                   r="48"
@@ -70,7 +70,7 @@ export function GroupCard({
                   strokeDashoffset="0"
                 />
                 <circle
-                  className="text-blue-500 transition-all duration-300"
+                  className="text-blue-500 dark:text-blue-400 transition-all duration-300"
                   cx="50"
                   cy="50"
                   r="48"
@@ -93,38 +93,46 @@ export function GroupCard({
             <div
               className={`
                 w-12 h-12 rounded-full flex items-center justify-center mb-2
-                ${isOn ? 'text-blue-500' : 'text-gray-500'}
+                ${isOn ? 'text-blue-500 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}
                 transition-all duration-300 transform relative z-10
                 ${isLoading ? 'scale-95' : 'scale-100'}
                 group-active:scale-95
+                bg-blue-50 dark:bg-gray-700
               `}
               style={{
-                background: '#EEF4FF',
                 boxShadow: isOn
-                  ? 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff, 0 0 0 6px rgba(59, 130, 246, 0.1)'
-                  : '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff',
+                  ? 'var(--button-shadow-active)'
+                  : 'var(--button-shadow)',
                 transition: 'box-shadow 0.3s ease, transform 0.2s ease'
               }}
               onMouseDown={(e) => {
-                e.currentTarget.style.boxShadow = 'inset 6px 6px 12px #d1d9e6, inset -6px -6px 12px #ffffff';
+                e.currentTarget.style.boxShadow = 'var(--button-shadow-pressed)';
               }}
               onMouseUp={(e) => {
                 e.currentTarget.style.boxShadow = isOn
-                  ? 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff, 0 0 0 6px rgba(59, 130, 246, 0.1)'
-                  : '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff';
+                  ? 'var(--button-shadow-active)'
+                  : 'var(--button-shadow)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.boxShadow = isOn
-                  ? 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff, 0 0 0 6px rgba(59, 130, 246, 0.1)'
-                  : '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff';
+                  ? 'var(--button-shadow-active)'
+                  : 'var(--button-shadow)';
               }}
               onTouchStart={(e) => {
-                e.currentTarget.style.boxShadow = 'inset 6px 6px 12px #d1d9e6, inset -6px -6px 12px #ffffff';
+                // Stop propagation to prevent the parent's long press from triggering
+                e.stopPropagation();
+                e.currentTarget.style.boxShadow = 'var(--button-shadow-pressed)';
               }}
               onTouchEnd={(e) => {
+                // Stop propagation to prevent the parent's handlers from triggering
+                e.stopPropagation();
                 e.currentTarget.style.boxShadow = isOn
-                  ? 'inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff, 0 0 0 6px rgba(59, 130, 246, 0.1)'
-                  : '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff';
+                  ? 'var(--button-shadow-active)'
+                  : 'var(--button-shadow)';
+              }}
+              onTouchMove={(e) => {
+                // Stop propagation to prevent the parent's handlers from triggering
+                e.stopPropagation();
               }}
             >
               <svg
@@ -146,7 +154,7 @@ export function GroupCard({
           <div className="text-xs font-medium relative h-4 overflow-hidden">
             <div className={`flex items-center transition-all duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
               <span
-                className={`inline-block transition-all duration-300 ${isOn ? 'text-blue-500 transform translate-y-0' : 'text-gray-600 transform translate-y-0'}`}
+                className={`inline-block transition-all duration-300 ${isOn ? 'text-blue-500 dark:text-blue-400 transform translate-y-0' : 'text-gray-600 dark:text-gray-400 transform translate-y-0'}`}
                 style={{
                   transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
                 }}
@@ -159,7 +167,7 @@ export function GroupCard({
       </button>
       
       {/* Long press hint */}
-      <div className="text-center py-1 text-[10px] text-gray-400 border-t border-gray-100">
+      <div className="text-center py-1 text-[10px] text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-gray-700">
         Long press for options
       </div>
     </div>

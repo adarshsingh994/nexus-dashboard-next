@@ -26,6 +26,12 @@
   /* Material Design Animation */
   --md-transition-standard: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --md-transition-emphasized: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Neumorphic Shadows */
+  --card-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
+  --button-shadow: 4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff;
+  --button-shadow-pressed: inset 6px 6px 12px #d1d9e6, inset -6px -6px 12px #ffffff;
+  --button-shadow-active: inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff, 0 0 0 6px rgba(59, 130, 246, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,6 +43,12 @@
     --md-primary: #90caf9;
     --md-primary-light: #a6d4fa;
     --md-primary-dark: #648dae;
+    
+    /* Dark mode neumorphic shadows */
+    --card-shadow: 8px 8px 16px rgba(0, 0, 0, 0.4), -8px -8px 16px rgba(255, 255, 255, 0.05);
+    --button-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.05);
+    --button-shadow-pressed: inset 6px 6px 12px rgba(0, 0, 0, 0.4), inset -6px -6px 12px rgba(255, 255, 255, 0.05);
+    --button-shadow-active: inset 4px 4px 8px rgba(0, 0, 0, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.05), 0 0 0 6px rgba(59, 130, 246, 0.2);
   }
 }
 

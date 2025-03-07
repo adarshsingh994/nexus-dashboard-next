@@ -78,7 +78,7 @@ export default function Switchboard({
   }, [refreshData, setLightStates]);
 
   return (
-    <div className="w-full min-h-screen p-2 sm:p-3 md:p-4 lg:p-6 bg-blue-50">
+    <div className="w-full min-h-screen p-2 sm:p-3 md:p-4 lg:p-6 bg-blue-50 dark:bg-gray-800">
       {error && (
         <div className="md-card bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6 max-w-6xl mx-auto">
           <div className="flex items-center">
@@ -93,42 +93,38 @@ export default function Switchboard({
           </div>
         </div>
       )}
+<CreateGroupPopup
+  isOpen={isCreateOpen}
+  onClose={onCreateClose}
+  onGroupCreated={refreshData}
+/>
 
-      <CreateGroupPopup
-        isOpen={isCreateOpen}
-        onClose={onCreateClose}
-        onGroupCreated={refreshData}
-      />
-
-      <div className="space-y-4 sm:space-y-6 max-w-6xl mx-auto">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Switchboard</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              {groups?.length || 0} {(groups?.length || 0) === 1 ? 'group' : 'groups'} available
-            </p>
-            {isClient && (
-              <p className="text-xs text-gray-400 mt-1">
-                Last refreshed: {lastRefresh?.toLocaleTimeString() || 'Never'}
-              </p>
-            )}
-          </div>
-        </div>
-        
-        {/* Neumorphic grid layout */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
+<div className="space-y-4 sm:space-y-6 max-w-6xl mx-auto">
+  <div className="flex items-center justify-between">
+    <div>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Switchboard</h1>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        {groups?.length || 0} {(groups?.length || 0) === 1 ? 'group' : 'groups'} available
+      </p>
+      {isClient && (
+        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+          Last refreshed: {lastRefresh?.toLocaleTimeString() || 'Never'}
+        </p>
+      )}
+    </div>
+  </div>
+  
+  {/* Neumorphic grid layout */}
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
           {groups.map((group) => (
             <GroupCard
               key={group.id}
               group={group}
               lightState={lightStates[group.id] || { isOn: false, isLoading: false }}
               onToggleLights={toggleLights}
-              onLongPress={(groupId) => {
-                handleTouchStart(
-                  { preventDefault: () => {} } as React.TouchEvent, 
-                  groupId
-                );
-              }}
+              handleTouchStart={handleTouchStart}
+              handleTouchEnd={handleTouchEnd}
+              handleTouchMove={handleTouchMove}
             />
           ))}
           
@@ -167,6 +163,8 @@ export * from './types';
 export * from './GroupCard';
 export * from './EmptyState';
 export * from './LongPressPopup';
+export * from './WeatherCard';
 export * from './hooks/useLightControl';
 export * from './hooks/useLongPress';
 export * from './hooks/useDataFetching';
+export * from './hooks/useWeatherData';
