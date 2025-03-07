@@ -7,7 +7,7 @@ import { useWeatherData } from '../../components/switchboard/hooks/useWeatherDat
 
 export default function SwitchboardPage() {
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
-  const { weatherData, isLoading, error, refreshWeatherData } = useWeatherData();
+  const { weatherData, isLoading, error, refreshWeatherData, isUsingApproximateLocation } = useWeatherData();
 
   return (
     <div className="min-h-screen bg-background dark:bg-gray-900">
@@ -18,6 +18,7 @@ export default function SwitchboardPage() {
             isLoading={isLoading}
             error={error}
             onRefresh={refreshWeatherData}
+            isUsingApproximateLocation={isUsingApproximateLocation}
           />
         </div>
       </div>

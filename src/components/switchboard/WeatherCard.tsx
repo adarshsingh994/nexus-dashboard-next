@@ -8,13 +8,15 @@ interface WeatherCardProps {
   isLoading: boolean;
   error: string;
   onRefresh: () => void;
+  isUsingApproximateLocation?: boolean;
 }
 
-export function WeatherCard({ 
-  weatherData, 
-  isLoading, 
-  error, 
-  onRefresh 
+export function WeatherCard({
+  weatherData,
+  isLoading,
+  error,
+  onRefresh,
+  isUsingApproximateLocation = false
 }: WeatherCardProps) {
   const [timeString, setTimeString] = useState<string>('');
 
@@ -130,13 +132,23 @@ export function WeatherCard({
             </div>
             
             {/* Location with indicator */}
-            <div className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-3 flex items-center justify-center">
+            <div className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1 flex items-center justify-center">
               <svg className="w-4 h-4 mr-1 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               {weatherData.location}
             </div>
+            
+            {/* Location accuracy indicator */}
+            {isUsingApproximateLocation && (
+              <div className="text-xs text-amber-600 dark:text-amber-400 mb-3 flex items-center justify-center">
+                <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Using approximate location
+              </div>
+            )}
             
             {/* Additional details */}
             <div className="w-full grid grid-cols-2 gap-2 text-xs text-gray-700 dark:text-gray-300">

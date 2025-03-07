@@ -20,11 +20,48 @@ export function useWeatherData() {
   const [error, setError] = useState<string>('');
   const [coords, setCoords] = useState<{lat: number, lon: number} | null>(null);
   const [locationError, setLocationError] = useState<string>('');
+  const [usingFallback, setUsingFallback] = useState<boolean>(false);
+
+  // Function to get location by IP address
+  const getLocationByIP = useCallback(async () => {
+    try {
+      setUsingFallback(true);
+      setLocationError('Using IP-based location (less accurate)');
+      console.log('Attempting to get location by IP address...');
+      
+      const response = await fetch('https://ipapi.co/json/');
+      if (!response.ok) {
+        throw new Error(`IP geolocation failed: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('IP geolocation successful:', data.city);
+      
+      setCoords({
+        lat: data.latitude,
+        lon: data.longitude
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('IP geolocation failed:', error);
+      setLocationError('Could not determine your location. Using default location.');
+      return false;
+    }
+  }, []);
 
   // Function to get user's current location
   const getUserLocation = useCallback(() => {
+    // Check if we're in a secure context
+    if (window.isSecureContext === false) {
+      console.log('Not in a secure context, using IP geolocation fallback');
+      getLocationByIP();
+      return;
+    }
+    
     if (!navigator.geolocation) {
-      setLocationError('Geolocation is not supported by your browser');
+      console.log('Geolocation not supported, using IP geolocation fallback');
+      getLocationByIP();
       return;
     }
 
@@ -36,20 +73,35 @@ export function useWeatherData() {
           lon: position.coords.longitude
         });
         setLocationError('');
+        setUsingFallback(false);
       },
-      (err) => {
+      async (err) => {
         console.error('Error getting location:', err);
-        setLocationError(`Unable to get your location: ${err.message}`);
-        setIsLoading(false);
+        setLocationError(`Unable to get precise location: ${err.message}`);
+        
+        // Fall back to IP-based geolocation
+        console.log('Falling back to IP-based geolocation');
+        await getLocationByIP();
       }
     );
-  }, []);
+  }, [getLocationByIP]);
 
   // Function to fetch weather data
   const fetchWeatherData = useCallback(async () => {
     if (locationError && !coords) {
-      // If there was a location error and we don't have coords, fall back to default location
+      // If there was a location error and we don't have coords, try IP geolocation before falling back to default
       setIsLoading(true);
+      
+      // Try IP geolocation first if we haven't already
+      if (!usingFallback) {
+        const success = await getLocationByIP();
+        if (success) {
+          // If IP geolocation succeeded, the coords will be set and the next useEffect will trigger fetchWeatherData again
+          return;
+        }
+      }
+      
+      // If IP geolocation failed or we're already using fallback, use default location
       try {
         const result = await weatherApi.fetchWeather();
         
@@ -58,7 +110,7 @@ export function useWeatherData() {
             temperature: result.data.temperature,
             condition: result.data.condition,
             icon: result.data.icon,
-            location: result.data.location,
+            location: `${result.data.location} (Default)`,
             humidity: result.data.humidity,
             windSpeed: result.data.windSpeed,
             lastUpdated: new Date()
@@ -92,7 +144,7 @@ export function useWeatherData() {
           temperature: result.data.temperature,
           condition: result.data.condition,
           icon: result.data.icon,
-          location: result.data.location,
+          location: usingFallback ? `${result.data.location} (Approximate)` : result.data.location,
           humidity: result.data.humidity,
           windSpeed: result.data.windSpeed,
           lastUpdated: new Date()
@@ -106,7 +158,7 @@ export function useWeatherData() {
     } finally {
       setIsLoading(false);
     }
-  }, [coords, locationError, getUserLocation]);
+  }, [coords, locationError, getUserLocation, getLocationByIP, usingFallback]);
 
   // Effect to fetch weather data when coordinates change
   useEffect(() => {
@@ -138,6 +190,7 @@ export function useWeatherData() {
     weatherData,
     isLoading,
     error: locationError || error,
-    refreshWeatherData: fetchWeatherData
+    refreshWeatherData: fetchWeatherData,
+    isUsingApproximateLocation: usingFallback
   };
 }
