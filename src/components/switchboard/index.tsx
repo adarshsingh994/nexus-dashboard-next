@@ -78,7 +78,7 @@ export default function Switchboard({
   }, [refreshData, setLightStates]);
 
   return (
-    <div className="w-full min-h-screen p-2 sm:p-3 md:p-4 lg:p-6 bg-blue-50 dark:bg-gray-800">
+    <div className="w-full min-h-screen p-2 sm:p-3 md:p-4 lg:p-6">
       {error && (
         <div className="md-card bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6 max-w-6xl mx-auto">
           <div className="flex items-center">

@@ -15,12 +15,13 @@ export function GroupCard({
 
   return (
     <div
-      className="overflow-hidden rounded-3xl transition-all duration-300 hover:translate-y-[-2px] bg-blue-50 dark:bg-gray-800"
+      className="overflow-hidden rounded-3xl transition-all duration-300 hover:translate-y-[-2px]"
       onTouchStart={(e) => handleTouchStart(e, group.id)}
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchMove}
       data-group-id={group.id}
       style={{
+        backgroundColor: 'var(--md-background, #EEF0F4)',
         boxShadow: 'var(--card-shadow)',
         transition: 'transform 0.3s ease, box-shadow 0.3s ease'
       }}
@@ -40,9 +41,9 @@ export function GroupCard({
           ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'}
           transition-all duration-300
           active:scale-[0.98]
-          bg-blue-50 dark:bg-gray-800
         `}
         style={{
+          backgroundColor: 'var(--md-background, #EEF0F4)',
           WebkitTapHighlightColor: 'transparent',
         }}
         aria-pressed={isOn}
@@ -97,9 +98,9 @@ export function GroupCard({
                 transition-all duration-300 transform relative z-10
                 ${isLoading ? 'scale-95' : 'scale-100'}
                 group-active:scale-95
-                bg-blue-50 dark:bg-gray-700
               `}
               style={{
+                backgroundColor: 'var(--md-background, #EEF0F4)',
                 boxShadow: isOn
                   ? 'var(--button-shadow-active)'
                   : 'var(--button-shadow)',
